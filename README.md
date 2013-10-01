@@ -3,4 +3,4 @@ TheFinestArtist-Android
 
 The Finest Artist's personal Android App
 
-web url : thefinestartist.com
+web url : http://www.thefinestartist.com
