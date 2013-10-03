@@ -97,7 +97,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             mWebview.setWebChromeClient(new MyWebChromeClient());
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
                 mWebview.getSettings().setPluginState(PluginState.ON);
-            mWebview.getSettings().setUseWideViewPort(true);
+            mWebview.getSettings().setUseWideViewPort(false);
             mWebview.getSettings().setDefaultZoom(ZoomDensity.FAR);
             mWebview.getSettings().setBuiltInZoomControls(true);
             mWebview.getSettings().setSupportZoom(true);
@@ -208,8 +208,10 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
 
             if (progress == 100) {
                 mPbar.setVisibility(ProgressBar.GONE);
-                if (!errored)
+                if (!errored) {
                     mReload.setVisibility(View.INVISIBLE);
+                    errorCount = 0;
+                }
             }
         }
     }
@@ -221,6 +223,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             mRefreshPbar.setVisibility(View.VISIBLE);
             mRefreshBtn.setVisibility(View.INVISIBLE);
             mReloadBtn.setClickable(false);
+            mReloadBtn.setTextColor(getResources().getColor(R.color.white_overlay));
             updateActionView();
         }
 
@@ -234,6 +237,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             mRefreshPbar.setVisibility(View.INVISIBLE);
             mRefreshBtn.setVisibility(View.VISIBLE);
             mReloadBtn.setClickable(true);
+            mReloadBtn.setTextColor(getResources().getColor(android.R.color.white));
             updateActionView();
 
             mLbar.setVisibility(View.INVISIBLE);
@@ -254,7 +258,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             errored = true;
-            if (errorCount == 0)
+            if (errorCount < 2)
                 view.reload();
             else {
                 mReload.setVisibility(View.VISIBLE);
