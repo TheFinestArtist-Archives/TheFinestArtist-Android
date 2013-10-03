@@ -27,7 +27,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -61,6 +60,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
     private FrameLayout mReload = null;
     private Button mReloadBtn = null;
     private int errorCount = 0;
+    private boolean errored = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -143,8 +143,8 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
                 mWebview.goForward();
                 break;
             case R.id.web_view_btn_refresh:
+                errored = false;
                 mWebview.reload();
-                mReload.setVisibility(View.INVISIBLE);
                 break;
             case R.id.web_view_btn_share:
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -160,8 +160,8 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
                 startActivity(shareIntent);
                 break;
             case R.id.reload_btn:
+                errored = false;
                 mWebview.reload();
-                mReload.setVisibility(View.INVISIBLE);
                 break;
         }
         updateActionView();
@@ -205,8 +205,12 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             if (progress < 100 && mPbar.getVisibility() == ProgressBar.GONE)
                 mPbar.setVisibility(ProgressBar.VISIBLE);
             mPbar.setProgress(progress);
-            if (progress == 100)
+
+            if (progress == 100) {
                 mPbar.setVisibility(ProgressBar.GONE);
+                if (!errored)
+                    mReload.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -216,6 +220,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             mRefreshPbar.setVisibility(View.VISIBLE);
             mRefreshBtn.setVisibility(View.INVISIBLE);
+            mReloadBtn.setClickable(false);
             updateActionView();
         }
 
@@ -228,6 +233,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             view.setVisibility(View.VISIBLE);
             mRefreshPbar.setVisibility(View.INVISIBLE);
             mRefreshBtn.setVisibility(View.VISIBLE);
+            mReloadBtn.setClickable(true);
             updateActionView();
 
             mLbar.setVisibility(View.INVISIBLE);
@@ -247,6 +253,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
 
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            errored = true;
             if (errorCount == 0)
                 view.reload();
             else {
