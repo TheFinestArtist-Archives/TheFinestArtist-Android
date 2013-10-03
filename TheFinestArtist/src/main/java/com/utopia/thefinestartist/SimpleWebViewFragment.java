@@ -17,13 +17,17 @@
 package com.utopia.thefinestartist;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -35,6 +39,7 @@ import android.webkit.WebSettings.PluginState;
 import android.webkit.WebSettings.ZoomDensity;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -53,6 +58,9 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
     private ImageButton mRefreshBtn = null;
     private ProgressBar mRefreshPbar = null;
     private ImageButton mShareBtn = null;
+    private FrameLayout mReload = null;
+    private Button mReloadBtn = null;
+    private int errorCount = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +78,8 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
 
         View view = inflater.inflate(R.layout.web_view, container, false);
 
+        mReload = (FrameLayout) view.findViewById(R.id.web_view_reload);
+
         mLbar = (ProgressBar) view.findViewById(R.id.web_view_loading);
         mPbar = (ProgressBar) view.findViewById(R.id.web_view_progress);
 
@@ -81,6 +91,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         mWebview.setVisibility(View.GONE);
         mWebview.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT));
+
         if (mUrl != null) {
             mWebview.setWebViewClient(new MyWebViewClient());
             mWebview.setWebChromeClient(new MyWebChromeClient());
@@ -94,6 +105,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
             mWebview.getSettings().setAllowFileAccess(true);
             mWebview.getSettings().setDomStorageEnabled(true);
             mWebview.getSettings().setJavaScriptEnabled(true);
+            mWebview.addJavascriptInterface(new JavaScriptInterface(getActivity()), "Android");
             mWebview.getSettings().setAppCacheEnabled(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                 mWebview.getSettings().setDisplayZoomControls(false);
@@ -107,11 +119,13 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         mRefreshBtn = (ImageButton) view.findViewById(R.id.web_view_btn_refresh);
         mRefreshPbar = (ProgressBar) view.findViewById(R.id.loading);
         mShareBtn = (ImageButton) view.findViewById(R.id.web_view_btn_share);
+        mReloadBtn = (Button) view.findViewById(R.id.reload_btn);
 
         mBackBtn.setOnClickListener(this);
         mFowardBtn.setOnClickListener(this);
         mRefreshBtn.setOnClickListener(this);
         mShareBtn.setOnClickListener(this);
+        mReloadBtn.setOnClickListener(this);
 
         updateActionView();
 
@@ -130,6 +144,7 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
                 break;
             case R.id.web_view_btn_refresh:
                 mWebview.reload();
+                mReload.setVisibility(View.INVISIBLE);
                 break;
             case R.id.web_view_btn_share:
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
@@ -143,6 +158,10 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
                     shareIntent.putExtra(Intent.EXTRA_TEXT, "http://thefinestartist.com");
                 }
                 startActivity(shareIntent);
+                break;
+            case R.id.reload_btn:
+                mWebview.reload();
+                mReload.setVisibility(View.INVISIBLE);
                 break;
         }
         updateActionView();
@@ -168,6 +187,17 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         mWebview.destroy();
     }
 
+    public boolean hasBack() {
+        if (mWebview == null)
+            return false;
+        return mWebview.canGoBack();
+    }
+
+    public void back() {
+        if (mWebview != null)
+            mWebview.goBack();
+    }
+
     public class MyWebChromeClient extends WebChromeClient {
 
         @Override
@@ -179,8 +209,6 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
                 mPbar.setVisibility(ProgressBar.GONE);
         }
     }
-
-    private int errorCount = 0;
 
     public class MyWebViewClient extends WebViewClient {
 
@@ -221,19 +249,28 @@ public class SimpleWebViewFragment extends Fragment implements OnClickListener {
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             if (errorCount == 0)
                 view.reload();
+            else {
+                mReload.setVisibility(View.VISIBLE);
+                view.setVisibility(View.INVISIBLE);
+            }
             errorCount++;
+
             super.onReceivedError(view, errorCode, description, failingUrl);
         }
     }
 
-    public boolean hasBack() {
-        if (mWebview == null)
-            return false;
-        return mWebview.canGoBack();
-    }
+    public class JavaScriptInterface {
 
-    public void back() {
-        if (mWebview != null)
-            mWebview.goBack();
+        Context mContext;
+
+        JavaScriptInterface(Context c) {
+            mContext = c;
+        }
+        //add other interface methods to be called from JavaScript
+
+        public void playSoundEffect() {
+            AudioManager am = (AudioManager) getActivity().getSystemService(Activity.AUDIO_SERVICE);
+            am.playSoundEffect(AudioManager.FX_KEY_CLICK);
+        }
     }
 }

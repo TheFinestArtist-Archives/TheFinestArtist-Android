@@ -3,8 +3,8 @@
     android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false"
     android:background="@android:color/white"
+    android:baselineAligned="false"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -34,17 +34,37 @@
             android:id="@+id/web_view_reload"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:layout_marginBottom="@dimen/card_show_stick_height_without_shadow" >
+            android:visibility="invisible"
+            android:background="@android:color/white">
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/app_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingTop="2dp"
+                    android:text="THE FINEST ARTIST"
+                    android:textColor="#333"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/reload_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fail to load..."
                 android:layout_gravity="center"
-                android:textSize="20dp"
-                />
+                android:background="@drawable/custom_button"
+                android:text="RELOAD" />
 
         </FrameLayout>
 
@@ -54,9 +74,9 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:layout_alignParentTop="true"
-            android:progressDrawable="@drawable/progress_bar_status"
             android:indeterminateOnly="false"
-            android:max="100" />
+            android:max="100"
+            android:progressDrawable="@drawable/progress_bar_status" />
 
         <View
             android:id="@+id/web_view_buttons_divider"
