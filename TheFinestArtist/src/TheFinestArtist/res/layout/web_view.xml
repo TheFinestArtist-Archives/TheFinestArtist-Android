@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:baselineAligned="false"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/web_view_loading"
+                style="@style/Widget.Sherlock.ProgressBar"
+                android:layout_width="@dimen/loading_spinner_size_big"
+                android:layout_height="@dimen/loading_spinner_size_big"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="@dimen/card_show_stick_height_without_shadow" />
+
+        <FrameLayout
+            android:id="@+id/web_view_reload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:background="@android:color/white">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/app_icon" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:paddingTop="2dp"
+                    android:text="THE FINEST ARTIST"
+                    android:textColor="#333"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/reload_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/custom_button"
+                android:text="RELOAD" />
+
+        </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/web_view_progress"
+            style="@style/Widget.Sherlock.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentTop="true"
+            android:indeterminateOnly="false"
+            android:max="100"
+            android:progressDrawable="@drawable/progress_bar_status" />
+
+        <View
+            android:id="@+id/web_view_buttons_divider"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/ad_bottom_sticky_uppershadow" />
+    </RelativeLayout>
+
+</LinearLayout>
